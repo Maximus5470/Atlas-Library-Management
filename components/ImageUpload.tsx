@@ -20,7 +20,7 @@ const authenticator = async () => {
 
     return { token, signature, expire };
   } catch (e) {
-    throw new Error(`Auth Failed: ${e.message}`);
+    throw new Error(`Auth Failed: ${(e as Error).message}`);
   }
 };
 

@@ -2,7 +2,7 @@ import { serve } from "@upstash/workflow/nextjs";
 import { users } from "@/database/schema";
 import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
-import { sendEmail } from "@/lib/workflow";
+import emailjs from "@emailjs/browser";
 
 type UserState = "non-active" | "active";
 
@@ -14,6 +14,25 @@ type InitialData = {
 const ONE_DAY_IN_MS = 60 * 60 * 24 * 1000;
 const THREE_DAYS_IN_MS = 3 * ONE_DAY_IN_MS;
 const ONE_MONTH_IN_MS = 30 * ONE_DAY_IN_MS;
+
+const sendEmail = async (
+  subject: string,
+  email: string,
+  name: string,
+  message: string,
+) => {
+  await emailjs.send(
+    process.env.EMAILJS_SERVICE_ID!,
+    process.env.EMAILJS_TEMPLATE_ID!,
+    {
+      subject,
+      to_email: email,
+      from_name: name,
+      message,
+    },
+    process.env.EMAILJS_PUBLIC_KEY!,
+  );
+};
 
 const getUserState = async (email: string): Promise<UserState> => {
   const user = await db
